@@ -1,0 +1,19 @@
+services:
+- docker
+script:
+- docker build -t wtanaka/ubuntu-1604-oracle-java-8-git .
+- >
+  docker run wtanaka/ubuntu-1604-oracle-java-8-git java -version
+  2>&1 | grep "java version .1.8"
+# Make sure git is installed
+- >
+  docker run wtanaka/ubuntu-1604-oracle-java-8-git sh -c "git --version"
+# Make sure it is still possible to use apt
+- >
+  docker run wtanaka/ubuntu-1604-oracle-java-8-git sh -c "apt-get update && apt-get install less"
+after_success:
+- >
+  curl -H "Content-Type: application/json"
+  --data '{"source_type": "Branch", "source_name": "master"}'
+  -X POST
+  https://registry.hub.docker.com/u/wtanaka/ubuntu-1604-oracle-java-8-git/trigger/7e042a8e-49b4-4f23-b75b-90010c2cdc56/
